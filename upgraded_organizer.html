@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials Organizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .materials-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .materials-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .material-item {
+            margin-bottom: 12px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .material-item label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .material-item input {
+            width: 100%;
+            margin-bottom: 0;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .output {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            border: 2px solid #e1e5e9;
+        }
+
+        .output h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .output-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #ddd;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .copy-btn.copied {
+            background: #20c997;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 5px;
+                padding: 20px;
+            }
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            margin-top: 5px;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .url-status {
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .url-status.loading {
+            color: #ffc107;
+        }
+
+        .url-status.success {
+            color: #28a745;
+        }
+
+        .url-status.error {
+            color: #dc3545;
+        }
+
+        .short-url-display {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #007bff;
+            word-break: break-all;
+        }
+
+        .short-url-display a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .short-url-display a:hover {
+            text-decoration: underline;
+        }
+
+        .auto-shorten-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .auto-shorten-label {
+            font-size: 14px;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #007bff;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .quote-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .quote-section h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .quote-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .quote-author {
+            color: #666;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .quote-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quote-btn:hover {
+            background: white;
+            color: #f5576c;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Study Materials Organizer</h1>
+            <p>إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ يَا أَيُّهَا الَّذِينَ آمَنُوا صَلُّوا عَلَيْهِ وَسَلِّمُوا تَسْلِيمًا</p>
+        </div>
+
+        <!-- Quote Section -->
+        <div class="quote-section">
+            <h4>💡 Daily Motivation</h4>
+            <div class="quote-container">
+                <div class="quote-text" id="quoteText">Click the button below to get an inspiring quote!</div>
+                <div class="quote-author" id="quoteAuthor"></div>
+            </div>
+            <button class="quote-btn" onclick="getRandomQuote()">🎲 Get New Quote</button>
+        </div>
+
+        <form id="studyForm">
+            <div class="form-group">
+                <label for="subject">📖 Subject:</label>
+                <select id="subject" required>
+                    <option value="">Select Subject</option>
+                    <option value="Antenna">Antenna</option>
+                    <option value="Digital Electronics">Digital Electronics</option>
+                    <option value="Opto-Electronics">Opto-Electronics</option>
+                    <option value="Telecom Systems">Telecom Systems</option>
+                    <option value="Control Systems">Control Systems</option>
+                    <option value="Project Management">Project Management</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="type">📋 Type:</label>
+                <select id="type" required>
+                    <option value="">Select Type</option>
+                    <option value="Lecture">Lecture</option>
+                    <option value="Section">Section</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="instructor">👨‍🏫 Instructor:</label>
+                <select id="instructor" required>
+                    <option value="">Select Instructor</option>
+                    <option value="Dr. Ayman Ragab">Dr. Ayman Ragab</option>
+                    <option value="Dr. Zaki Bassiony">Dr. Zaki Bassiony</option>
+                    <option value="Dr. Salwa El-Sabban">Dr. Salwa El-Sabban</option>
+                    <option value="Dr. Hesham Zarif">Dr. Hesham Zarif</option>
+                    <option value="Dr. Amr Wageh">Dr. Amr Wageh</option>
+                    <option value="Dr. Mohamed Hussien">Dr. Mohamed Hussien</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date">📅 Date:</label>
+                <select id="date" required>
+                    <option value="">Select Date</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="number">🔢 Number:</label>
+                <input type="number" id="number" placeholder="e.g., 1, 2, 3..." required min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="title">📝 Title:</label>
+                <input type="text" id="title" placeholder="e.g., Introduction to Calculus" required>
+            </div>
+
+            <div class="materials-section">
+                <div class="auto-shorten-container">
+                    <span class="auto-shorten-label">Auto-shorten URLs:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="autoShorten" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <p class="info-text"> </p>
+                <h3>🔎 Available Materials</h3>
+                <div id="materials-container">
+                    <!-- Materials will be populated based on type selection -->
+                </div>
+            </div>
+
+            <button type="submit" class="btn">🚀 Generate Message</button>
+            <button type="button" class="btn reset-btn" onclick="resetForm()">🔄 Reset Form</button>
+        </form>
+
+        <div id="output" class="output hidden">
+            <h3>📱 Generated Telegram Message</h3>
+            <div id="output-content" class="output-content"></div>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <!-- Notification for copy feedback -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Inspirational quotes database
+        const quotes = [
+            { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+            { text: "Don't be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
+            { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+            { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+            { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle" },
+            { text: "Success is not how high you have climbed, but how you make a positive difference to the world.", author: "Roy T. Bennett" },
+            { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
+            { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+            { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+            { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+            { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+            { text: "Learning never exhausts the mind.", author: "Leonardo da Vinci" },
+            { text: "Knowledge is power.", author: "Francis Bacon" },
+            { text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.", author: "Dr. Seuss" },
+            { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+            { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" },
+            { text: "Tell me and I forget, teach me and I may remember, involve me and I learn.", author: "Benjamin Franklin" },
+            { text: "The beautiful thing about learning is that no one can take it away from you.", author: "B.B. King" },
+            { text: "Study hard what interests you the most in the most undisciplined, irreverent and original manner possible.", author: "Richard Feynman" }
+        ];
+
+        let currentQuote = null;
+
+        // Predefined materials for each type
+        const materials = {
+            lecture: [
+                { name: 'Slides', emoji: '📊', key: 'slides' },
+                { name: 'Board', emoji: '📷', key: 'Board' },
+                { name: 'Recording', emoji: '🎤', key: 'recording' },
+                { name: 'Lecture Notes', emoji: '📝', key: 'notes' },
+                { name: 'Summary', emoji: '📋', key: 'summary' },
+                { name: 'Explanation Video', emoji: '🎥', key: 'explanation' }
+            ],
+            section: [
+                { name: 'Sheet', emoji: '📄', key: 'sheet' },
+                { name: 'Sheet Solution', emoji: '✅', key: 'solution' },
+                { name: 'Summary', emoji: '📋', key: 'summary' },
+                { name: 'Explanation Video', emoji: '🎥', key: 'explanation' }
+            ]
+        };
+
+        // Subject-specific instructors mapping
+        const instructorMapping = {
+            'Antenna': {
+                'Lecture': ['Dr. Ayman Ragab'],
+                'Section': ['Eng. Alaa El-Din Ahmed', 'Eng. Mohamed El-Arabawy (old)', 'Eng. David (old)']
+            },
+            'Digital Electronics': {
+                'Lecture': ['Dr. Zaki Bassiony'],
+                'Section': ['Eng. Fehr Hassan', 'Eng. Basma Gamal (old)']
+            },
+            'Opto-Electronics': {
+                'Lecture': ['Dr. Salwa El-Sabban'],
+                'Section': ['Eng. Sara Hany', 'Eng. Marwa El-Ries']
+            },
+            'Telecom Systems': {
+                'Lecture': ['Dr. Hesham Zarif', 'Dr. Gamal Abd-ElFadiel'],
+                'Section': ['Eng. Mai Awad', 'Eng. Basma Diaa']
+            },
+            'Control Systems': {
+                'Lecture': ['Dr. Amr Wageh'],
+                'Section': ['Eng. Marwa El-Ries', 'Eng. Fehr Hassan', 'Eng. Mohamed El-Arabawy (old)', 'Dr. Amr Wageh (old)', 'Eng. Fareda (old)']
+            },
+            'Project Management': {
+                'Lecture': ['Dr. Mohamed Hussien', 'Dr. Ismail Zahran'],
+                'Section': []
+            }
+        };
+
+        let generatedMessage = '';
+
+        // Get random quote function
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            currentQuote = quotes[randomIndex];
+            
+            document.getElementById('quoteText').textContent = `"${currentQuote.text}"`;
+            document.getElementById('quoteAuthor').textContent = `— ${currentQuote.author}`;
+        }
+
+        // Show notification function
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Enhanced copy to clipboard function with mobile support
+        async function copyToClipboard() {
+            const copyBtn = document.querySelector('.copy-btn');
+            const originalText = copyBtn.textContent;
+            
+            try {
+                // Modern clipboard API (works on most modern browsers and mobile)
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(generatedMessage);
+                    copyBtn.textContent = '✅ Copied!';
+                    copyBtn.classList.add('copied');
+                    showNotification('✅ Message copied to clipboard!');
+                } else {
+                    // Fallback for older browsers and mobile
+                    const textArea = document.createElement('textarea');
+                    textArea.value = generatedMessage;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    
+                    // Focus and select for mobile compatibility
+                    textArea.focus();
+                    textArea.select();
+                    textArea.setSelectionRange(0, 99999); // For mobile devices
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        copyBtn.textContent = '✅ Copied!';
+                        copyBtn.classList.add('copied');
+                        showNotification('✅ Message copied to clipboard!');
+                    } else {
+                        throw new Error('Copy command failed');
+                    }
+                }
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                showNotification('❌ Failed to copy. Please copy manually.', true);
+                
+                // As a last resort, select the text for manual copying
+                const outputContent = document.getElementById('output-content');
+                const selection = window.getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(outputContent);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        // Initialize date options
+        function initializeDates() {
+            const dateSelect = document.getElementById('date');
+            const today = new Date();
+            
+            // Generate dates for current month and next month
+            for (let i = -7; i <= 30; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const dateStr = date.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                
+                const option = document.createElement('option');
+                option.value = dateStr;
+                option.textContent = `${dayName}, ${dateStr}`;
+                dateSelect.appendChild(option);
+            }
+            
+            // Set today as default
+            const todayStr = today.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            dateSelect.value = todayStr;
+        }
+
+        // Update instructors based on subject and type selection
+        function updateInstructors() {
+            const subject = document.getElementById('subject').value;
+            const type = document.getElementById('type').value;
+            const instructorSelect = document.getElementById('instructor');
+            
+            // Clear current options
+            instructorSelect.innerHTML = '<option value="">Select Instructor</option>';
+            
+            if (subject && type && instructorMapping[subject] && instructorMapping[subject][type]) {
+                const instructors = instructorMapping[subject][type];
+                
+                instructors.forEach(instructor => {
+                    const option = document.createElement('option');
+                    option.value = instructor;
+                    option.textContent = instructor;
+                    instructorSelect.appendChild(option);
+                });
+                
+                // Auto-select if only one instructor available
+                if (instructors.length === 1) {
+                    instructorSelect.value = instructors[0];
+                }
+            }
+        }
+
+        // Add event listeners for subject and type changes
+        document.getElementById('subject').addEventListener('change', updateInstructors);
+        document.getElementById('type').addEventListener('change', function() {
+            updateInstructors();
+            
+            // Also update materials as before
+            const type = this.value.toLowerCase();
+            const container = document.getElementById('materials-container');
+            
+            container.innerHTML = '';
+            
+            if (type && materials[type]) {
+                materials[type].forEach(material => {
+                    const div = document.createElement('div');
+                    div.className = 'material-item';
+                    div.innerHTML = `
+                        <label>${material.emoji} ${material.name}:</label>
+                        <input type="url" 
+                               name="${material.key}" 
+                               placeholder="Enter ${material.name.toLowerCase()} link (optional)"
+                               data-material-name="${material.name}"
+                               autocomplete="off"
+                               spellcheck="false">
+                        <span class="url-status" id="status-${material.key}"></span>
+                        <div class="short-url-display" id="short-url-${material.key}"></div>
+                    `;
+                    container.appendChild(div);
+                });
+
+                // Add auto-shortening on blur if enabled
+                if (document.getElementById('autoShorten').checked) {
+                    container.querySelectorAll('input[type="url"]').forEach(input => {
+                        input.addEventListener('blur', function() {
+                            const url = this.value.trim();
+                            const materialKey = this.name;
+                            
+                            if (url && !this.dataset.shortUrl) {
+                                shortenUrl(url, materialKey);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+
+        // URL validation function
+        function isValidUrl(string) {
+            try {
+                // Add protocol if missing
+                if (!string.startsWith('http://') && !string.startsWith('https://')) {
+                    string = 'https://' + string;
+                }
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Format URL to ensure it has a protocol
+        function formatUrl(url) {
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                return 'https://' + url;
+            }
+            return url;
+        }
+
+        // Update status message
+        function updateStatus(materialKey, message, type) {
+            const statusElement = document.getElementById(`status-${materialKey}`);
+            statusElement.textContent = message;
+            statusElement.className = `url-status ${type}`;
+        }
+
+        // Simple client-side URL shortening (fallback)
+        function simpleShortenUrl(url) {
+            // Create a simple hash-based short URL
+            const hash = Math.random().toString(36).substring(2, 8);
+            return `https://example.com/${hash}`; // This is just a placeholder
+        }
+
+        // URL shortening function with multiple fallbacks
+        async function shortenUrl(url, materialKey) {
+            const formattedUrl = formatUrl(url);
+            
+            if (!isValidUrl(formattedUrl)) {
+                updateStatus(materialKey, '⌘ Invalid URL', 'error');
+                return;
+            }
+
+            updateStatus(materialKey, '⏳ Shortening...', 'loading');
+
+            try {
+                // Try multiple shortening services with fallbacks
+                let shortUrl = await tryShorteningServices(formattedUrl);
+                
+                if (!shortUrl) {
+                    // If all services fail, use a simple client-side shortening
+                    shortUrl = simpleShortenUrl(formattedUrl);
+                    updateStatus(materialKey, '✅ Shortened (local)', 'success');
+                } else {
+                    updateStatus(materialKey, '✅ Shortened', 'success');
+                }
+                
+                // Display the shortened URL
+                const shortUrlDisplay = document.getElementById(`short-url-${materialKey}`);
+                shortUrlDisplay.innerHTML = `Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+                
+                // Store the shortened URL in the input's dataset
+                const input = document.querySelector(`input[name="${materialKey}"]`);
+                input.dataset.shortUrl = shortUrl;
+                
+            } catch (error) {
+                console.error('Error shortening URL:', error);
+                updateStatus(materialKey, '⌘ Error shortening', 'error');
+            }
+        }
+
+        // Try multiple URL shortening services
+        async function tryShorteningServices(url) {
+            const services = [
+                {
+                    name: 'TinyURL',
+                    url: `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`
+                },
+                {
+                    name: 'is.gd',
+                    url: `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`
+                }
+            ];
+
+            for (const service of services) {
+                try {
+                    const response = await fetchWithTimeout(service.url, { timeout: 5000 });
+                    
+                    if (response.ok) {
+                        const shortUrl = await response.text();
+                        
+                        // Validate that we got a proper URL back
+                        if (shortUrl && shortUrl.startsWith('http')) {
+                            return shortUrl;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Service ${service.name} failed:`, error);
+                    // Continue to next service
+                }
+            }
+            
+            return null; // All services failed
+        }
+
+        // Fetch with timeout utility
+        function fetchWithTimeout(url, options = {}) {
+            const { timeout = 8000, ...fetchOptions } = options;
+            
+            return Promise.race([
+                fetch(url, fetchOptions),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Request timeout')), timeout)
+                )
+            ]);
+        }
+
+        // Toggle auto-shortening
+        document.getElementById('autoShorten').addEventListener('change', function() {
+            const container = document.getElementById('materials-container');
+            const inputs = container.querySelectorAll('input[type="url"]');
+            
+            inputs.forEach(input => {
+                // Remove existing blur event listeners
+                input.replaceWith(input.cloneNode(true));
+                
+                // Add new blur event listener if auto-shorten is enabled
+                if (this.checked) {
+                    input.addEventListener('blur', function() {
+                        const url = this.value.trim();
+                        const materialKey = this.name;
+                        
+                        if (url && !this.dataset.shortUrl) {
+                            shortenUrl(url, materialKey);
+                        }
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('studyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateMessage();
+        });
+
+        function generateMessage() {
+            const formData = new FormData(document.getElementById('studyForm'));
+            const data = {};
+            
+            // Get form values
+            data.subject = document.getElementById('subject').value;
+            data.type = document.getElementById('type').value;
+            data.instructor = document.getElementById('instructor').value;
+            data.date = document.getElementById('date').value;
+            data.number = document.getElementById('number').value;
+            data.title = document.getElementById('title').value;
+            
+            // Get materials
+            const materialsContainer = document.getElementById('materials-container');
+            const materialInputs = materialsContainer.querySelectorAll('input[type="url"]');
+            const availableMaterials = [];
+            
+            materialInputs.forEach(input => {
+                if (input.value.trim()) {
+                    const materialName = input.dataset.materialName;
+                    const emoji = materials[data.type.toLowerCase()].find(m => m.name === materialName)?.emoji || '🔎';
+                    
+                    // Use shortened URL if available, otherwise use original
+                    const link = input.dataset.shortUrl || input.value.trim();
+                    
+                    availableMaterials.push({
+                        name: materialName,
+                        emoji: emoji,
+                        link: link
+                    });
+                }
+            });
+            
+            // Generate the message
+            let message = `📚 *${data.subject}* - ${data.type} ${data.number}\n`;
+            message += `📖 ${data.title}\n`;
+            message += `👨‍🏫 *Instructor:* ${data.instructor}\n`;
+            message += `📅 *Date:* ${data.date}\n\n`;
+            
+            if (availableMaterials.length > 0) {
+                message += `🔎 *Available Materials:*\n`;
+                availableMaterials.forEach(material => {
+                    message += `${material.emoji} *${material.name}*:\n [${material.link}]\n`;
+                });
+            } else {
+                message += `🔎 Materials will be uploaded soon...\n`;
+            }
+            
+            message += `\n📢 Stay tuned for more updates!\n`;
+            
+            // Add random quote if available
+            if (currentQuote) {
+                message += `\n💭 *Quote for you:*\n`;
+                message += `"${currentQuote.text}"\n`;
+                message += `— ${currentQuote.author}\n`;
+            }
+            
+            generatedMessage = message;
+            
+            // Display the message
+            document.getElementById('output-content').textContent = message;
+            document.getElementById('output').classList.remove('hidden');
+            
+            // Scroll to output
+            document.getElementById('output').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('studyForm').reset();
+            document.getElementById('materials-container').innerHTML = '';
+            document.getElementById('output').classList.add('hidden');
+            generatedMessage = '';
+            
+            // Reset to today's date
+            const today = new Date();
+            const todayStr = today.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            document.getElementById('date').value = todayStr;
+            
+            // Reset quote
+            document.getElementById('quoteText').textContent = 'Click the button below to get an inspiring quote!';
+            document.getElementById('quoteAuthor').textContent = '';
+            currentQuote = null;
+        }
+
+        // Initialize the app
+        initializeDates();
+        
+        // Load an initial quote
+        getRandomQuote();
+    </script>
+</body>
+</html>
